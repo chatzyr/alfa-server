@@ -1,9 +1,20 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const axios = require('axios');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+
+async function getPublicIP() {
+  try {
+    const response = await axios.get('https://api64.ipify.org?format=json');
+    const ip = response.data.ip;
+    console.log('Your public IP address is:', ip);
+  } catch (error) {
+    console.error('Error fetching public IP:', error.message);
+  }
+}
 // Middleware to parse JSON requests
 app.use(bodyParser.json());
 
@@ -11,8 +22,10 @@ app.use(bodyParser.json());
 app.get('/listen', (req, res) => {
     console.log('Received GET requestt ');
 
-   const queryParam = req.query.queryParam; // assuming your query parameter is named 'queryParam'
-   console.log('Query Pramsss '+queryParam);
+    getPublicIP();
+res.send(200);
+   // const queryParam = req.query.queryParam; // assuming your query parameter is named 'queryParam'
+   // console.log('Query Pramsss '+queryParam);
   // Make sure a query parameter is provided
   // if (!queryParam) {
   //   return res.status(400).json({ error: 'Query parameter is required' });
