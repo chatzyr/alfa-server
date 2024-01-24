@@ -19,11 +19,11 @@ async function getPublicIP() {
 app.use(bodyParser.json());
 
 // GET route for /listen
-app.get('/listen', (req, res) => {
+app.get('/listen', async (req, res) => {
     console.log('Received GET requestt ');
 
-    getPublicIP();
-res.send(200);
+    await getPublicIP();
+res.send('TAHIR');
    // const queryParam = req.query.queryParam; // assuming your query parameter is named 'queryParam'
    // console.log('Query Pramsss '+queryParam);
   // Make sure a query parameter is provided
