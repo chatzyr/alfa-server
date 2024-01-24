@@ -9,10 +9,10 @@ app.use(bodyParser.json());
 
 // GET route for /listen
 app.get('/listen', (req, res) => {
-    console.log('Received GET request ');
+    console.log('Received GET requestt ');
 
    const queryParam = req.query.queryParam; // assuming your query parameter is named 'queryParam'
-   console.log('Query Prams '+queryParam);
+   console.log('Query Pramsss '+queryParam);
   // Make sure a query parameter is provided
   // if (!queryParam) {
   //   return res.status(400).json({ error: 'Query parameter is required' });
