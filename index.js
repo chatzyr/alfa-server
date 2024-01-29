@@ -4,12 +4,13 @@ const axios = require("axios");
 
 const app = express();
 const port = process.env.PORT || 3000;
+const ping = require("ping");
 
 async function getPublicIP() {
   try {
     const response = await axios.get("https://api64.ipify.org?format=json");
     const ip = response.data.ip;
-    console.log("Your public IP address isss:", ip);
+    console.log("Your public IP address is:", ip);
   } catch (error) {
     console.error("Error fetching public IP:", error.message);
   }
@@ -51,7 +52,16 @@ app.post("/listen", (req, res) => {
   console.log("Request body:", req.body);
   res.send("POST request received");
 });
+app.get("/ping", async (req, res) => {
+  const targetServer = "103.232.255.91"; // Change this to the IP address you want to ping
 
+  // Ping the target server
+  ping.sys.probe(targetServer, (isAlive) => {
+    const status = isAlive ? "alive" : "dead";
+    console.log(`Target server (${targetServer}) is ${status}`);
+    res.json({ status });
+  });
+});
 // Start the server
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
