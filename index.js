@@ -29,26 +29,55 @@ const targetServers = [
   "202.59.254.101",
 ];
 
+const rateLimit = require("express-rate-limit");
+const limiter = rateLimit({
+  windowMs: 10 * 1000, // 10 seconds
+  max: 10, // limit each IP to 10 requests per windowMs
+});
+
+app.use(limiter);
+
+// GET route for /pingserversalpha
 app.get("/pingserversalpha", async (req, res) => {
-  const pingResults = await Promise.all(
+  const pingResults = await Promise.allSettled(
     targetServers.map(async (targetServer) => {
       try {
-        // Send an HTTP GET request to the server
-        const response = await axios.get(`http://${targetServer}`);
-        // Check if the server responded with a successful status code
-        const status = response.status === 200 ? "alive" : "dead";
-        return { targetServer, status };
+        const response = await axios.get(`http://${targetServer}`, {
+          timeout: 5000, // Timeout after 5 seconds
+        });
+
+        if (response.status === 200) {
+          return { targetServer, status: "alive" };
+        } else {
+          throw new Error("Server returned non-200 status code");
+        }
       } catch (error) {
-        // If an error occurred (e.g., server is unreachable), mark the server as 'dead'
-        return { targetServer, status: "dead" };
+        return { targetServer, status: "dead", error: error.message };
       }
     })
   );
 
-  console.log("Ping results:", pingResults);
-  res.json(pingResults);
+  const formattedResults = pingResults.map((result) => {
+    if (result.status === "fulfilled") {
+      return result.value;
+    } else {
+      return {
+        targetServer: "N/A",
+        status: "dead",
+        error: result.reason.message,
+      };
+    }
+  });
+
+  console.log("Ping results:", formattedResults);
+  res.json(formattedResults);
 });
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error("Error:", err.message);
+  res.status(500).json({ error: "Internal Server Error" });
+});
 // Start the server
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
