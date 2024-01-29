@@ -29,13 +29,19 @@ const targetServers = [
   "202.59.254.101",
 ];
 
-app.get("/pingservers", async (req, res) => {
+app.get("/pingserversalpha", async (req, res) => {
   const pingResults = await Promise.all(
     targetServers.map(async (targetServer) => {
-      // Ping the target server
-      const isAlive = await ping.promise.probe(targetServer);
-      const status = isAlive ? "alive" : "dead";
-      return { targetServer, status };
+      try {
+        // Send an HTTP GET request to the server
+        const response = await axios.get(`http://${targetServer}`);
+        // Check if the server responded with a successful status code
+        const status = response.status === 200 ? "alive" : "dead";
+        return { targetServer, status };
+      } catch (error) {
+        // If an error occurred (e.g., server is unreachable), mark the server as 'dead'
+        return { targetServer, status: "dead" };
+      }
     })
   );
 
