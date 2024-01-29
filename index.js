@@ -52,9 +52,9 @@ app.post("/listen", (req, res) => {
   console.log("Request body:", req.body);
   res.send("POST request received");
 });
-app.get("/ping", async (req, res) => {
+app.get("/pinged", async (req, res) => {
   const targetServer = "103.232.255.91"; // Change this to the IP address you want to ping
-
+  console.log("OK");
   // Ping the target server
   ping.sys.probe(targetServer, (isAlive) => {
     const status = isAlive ? "alive" : "dead";
