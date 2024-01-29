@@ -29,7 +29,7 @@ const targetServers = [
   "202.59.254.101",
 ];
 
-app.get("/ping", async (req, res) => {
+app.get("/pingservers", async (req, res) => {
   const pingResults = await Promise.all(
     targetServers.map(async (targetServer) => {
       // Ping the target server
